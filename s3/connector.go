@@ -40,5 +40,5 @@ func ConnectS3(conf S3Config) (*S3Driver, error) {
 		o.UsePathStyle = conf.UsePathStyle
 	})
 
-	return NewS3Driver(client, conf.Bucket), nil
+	return NewS3Driver(client, conf.Bucket, conf.Endpoint), nil
 }

@@ -10,14 +10,16 @@ import (
 )
 
 type S3Driver struct {
-	client *s3.Client
-	bucket string
+	client   *s3.Client
+	bucket   string
+	endpoint string
 }
 
-func NewS3Driver(client *s3.Client, bucket string) *S3Driver {
+func NewS3Driver(client *s3.Client, bucket string, endpoint string) *S3Driver {
 	return &S3Driver{
-		client: client,
-		bucket: bucket,
+		client:   client,
+		bucket:   bucket,
+		endpoint: endpoint,
 	}
 }
 
@@ -50,4 +52,14 @@ func (s *S3Driver) Exists(ctx context.Context, path string) (bool, error) {
 		return false, nil // En S3, si HeadObject da error, usualmente es que no existe
 	}
 	return true, nil
+}
+
+func (s *S3Driver) GetURL(path string) string {
+	// Si es S3 real, la URL suele ser: https://bucket.s3.region.amazonaws.com/path
+	// Si es MinIO, depende de tu endpoint.
+	// Por ahora, puedes devolver el path o construir la URL básica:
+	if s.endpoint != "" {
+		return fmt.Sprintf("%s/%s/%s", s.endpoint, s.bucket, path)
+	}
+	return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", s.bucket, path)
 }
