@@ -1,5 +1,5 @@
 // connector.go
-package drivers
+package s3
 
 import (
 	"context"
